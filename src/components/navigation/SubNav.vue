@@ -4,9 +4,7 @@
       <div v-if="onJobResultsPage">
         <font-awesome-icon :icon="['fas', 'search']" class="mr-3" />
         <span>
-          <span class="text-brand-green-1">{{
-            FILTERED_JOBS_BY_ORGANIZATIONS.length
-          }}</span>
+          <span class="text-brand-green-1">{{ FILTERED_JOBS.length }}</span>
           jobs matched
         </span>
       </div>
@@ -14,18 +12,10 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
+<script setup>
+import { useFilteredJobs } from "@/store/composables";
+import useConfirmRoute from "@/composables/useConfirmRoute";
 
-export default {
-  name: "SubNavigation",
-  computed: {
-    ...mapGetters(["FILTERED_JOBS_BY_ORGANIZATIONS"]),
-    onJobResultsPage() {
-      return this.$route.name === "job-results";
-    },
-  },
-};
+const FILTERED_JOBS = useFilteredJobs();
+const onJobResultsPage = useConfirmRoute("job-results");
 </script>
-
-<style scoped></style>

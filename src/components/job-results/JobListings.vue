@@ -27,49 +27,32 @@
   </main>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted } from "vue";
+
 import JobListing from "@/components/job-results/JobListing.vue";
-import { mapGetters, mapActions } from "vuex";
 
-export default {
-  name: "JobListings",
-  components: {
-    JobListing,
-  },
-  computed: {
-    ...mapGetters(["FILTERED_JOBS_BY_ORGANIZATIONS"]),
-    currentPage() {
-      return +(this.$route.query.page || "1");
-    },
-    previousPage() {
-      const previousPage = this.currentPage - 1;
-      const firstPage = 1;
-      return previousPage >= firstPage ? previousPage : null;
-    },
-    nextPage() {
-      const nextPage = this.currentPage + 1;
-      const maxPage = Math.ceil(
-        this.FILTERED_JOBS_BY_ORGANIZATIONS.length / 10
-      );
-      return nextPage <= maxPage ? nextPage : null;
-    },
-    displayedJobs() {
-      const pageNumber = this.currentPage;
-      const firstJobIndex = (pageNumber - 1) * 10;
-      const lastJobIndex = pageNumber * 10;
-      return this.FILTERED_JOBS_BY_ORGANIZATIONS.slice(
-        firstJobIndex,
-        lastJobIndex
-      );
-    },
-  },
-  methods: {
-    ...mapActions(["FETCH_JOBS"]),
-  },
-  async mounted() {
-    await this.FETCH_JOBS();
-  },
-};
+import usePreviousAndNextPages from "@/composables/usePreviousAndNextPages";
+import { useFilteredJobs } from "@/store/composables";
+import useCurrentPage from "@/composables/useCurrentPage";
+import { useFetchJobsDispatch } from "@/store/composables";
+
+const filteredJobs = useFilteredJobs();
+
+onMounted(useFetchJobsDispatch);
+
+const currentPage = useCurrentPage();
+
+const maxPage = computed(() => Math.ceil(filteredJobs.value.length / 10));
+const { previousPage, nextPage } = usePreviousAndNextPages(
+  currentPage,
+  maxPage
+);
+
+const displayedJobs = computed(() => {
+  const pageNumber = currentPage.value;
+  const firstJobIndex = (pageNumber - 1) * 10;
+  const lastJobIndex = pageNumber * 10;
+  return filteredJobs.value.slice(firstJobIndex, lastJobIndex);
+});
 </script>
-
-<style scoped></style>
