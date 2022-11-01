@@ -33,13 +33,19 @@ import { computed, onMounted } from "vue";
 import JobListing from "@/components/job-results/JobListing.vue";
 
 import usePreviousAndNextPages from "@/composables/usePreviousAndNextPages";
-import { useFilteredJobs } from "@/store/composables";
+import {
+  useFilteredJobs,
+  useFetchDegreesDispatch,
+  useFetchJobsDispatch,
+} from "@/store/composables";
 import useCurrentPage from "@/composables/useCurrentPage";
-import { useFetchJobsDispatch } from "@/store/composables";
 
 const filteredJobs = useFilteredJobs();
 
-onMounted(useFetchJobsDispatch);
+onMounted(() => {
+  useFetchJobsDispatch();
+  useFetchDegreesDispatch();
+});
 
 const currentPage = useCurrentPage();
 

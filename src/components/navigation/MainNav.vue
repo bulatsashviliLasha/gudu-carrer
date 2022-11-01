@@ -34,7 +34,7 @@
           <action-button
             type="primary"
             text="Sign in"
-            @click="LOGIN_USER"
+            @click="loginUser"
             v-else
           />
         </div>
@@ -44,45 +44,25 @@
   </header>
 </template>
 
-<script>
-import { mapState, mapMutations } from "vuex";
+<script setup lang="ts">
+import { useStore } from "vuex";
+import { reactive, computed } from "vue";
 
 import ActionButton from "@/components/shared/ActionButton.vue";
 import ProfileImage from "@/components/navigation/ProfileImage.vue";
 import SabNav from "@/components/navigation/SubNav.vue";
 
-export default {
-  name: "MainNav",
-  components: {
-    ActionButton,
-    ProfileImage,
-    SabNav,
-  },
-  data() {
-    return {
-      menuItems: [
-        { text: "Teams", url: "/teams" },
-        { text: "Locations", url: "/" },
-        { text: "Life at Gudu", url: "/" },
-        { text: "How we hire", url: "/" },
-        { text: "Students", url: "/" },
-        { text: "Jobs", url: "/jobs/results" },
-      ],
-    };
-  },
-  computed: {
-    headerHeightClass() {
-      return {
-        "h-16": !this.isLoggedIn,
-        "h-32": this.isLoggedIn && false,
-      };
-    },
-    ...mapState(["isLoggedIn"]),
-  },
-  methods: {
-    ...mapMutations(["LOGIN_USER"]),
-  },
-};
-</script>
+const store = useStore();
 
-<style scoped></style>
+const menuItems = reactive([
+  { text: "Teams", url: "/teams" },
+  { text: "Locations", url: "/" },
+  { text: "Life at Gudu", url: "/" },
+  { text: "How we hire", url: "/" },
+  { text: "Students", url: "/" },
+  { text: "Jobs", url: "/jobs/results" },
+]);
+
+const isLoggedIn = computed(() => store.state.isLoggedIn);
+const loginUser = () => store.commit("LOGIN_USER");
+</script>

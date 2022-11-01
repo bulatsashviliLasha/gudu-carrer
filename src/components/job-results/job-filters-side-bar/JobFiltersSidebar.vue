@@ -6,42 +6,73 @@
       <div class="flex flex-row justify-between">
         <h3 class="my-4 text-base font-semibold">What do you want to do?</h3>
         <div class="flex items-center text-sm">
-          <action-button text="Clear Filters" type="secondary" />
+          <action-button
+            text="Clear Filters"
+            type="secondary"
+            @click="clearUserJobFilterSelection"
+          />
         </div>
       </div>
 
-      <job-filters-side-bar-checkbox-group
-        :uniqueValues="uniqueJobTypes"
-        header="Job Types"
-        mutation="ADD_SELECTED_JOB_TYPES"
-      />
+      <accordion header="Skills and Qualifications">
+        <JobFiltersSidebarSkills />
+      </accordion>
 
-      <job-filters-side-bar-checkbox-group
-        :uniqueValues="uniqueOrganizations"
-        header="Organizations"
-        mutation="ADD_SELECTED_ORGANIZATIONS"
-      />
+      <accordion header="Degrees">
+        <job-filters-side-bar-checkbox-group
+          :uniqueValues="uniqueDegrees"
+          mutation="ADD_SELECTED_DEGREES"
+        />
+      </accordion>
+
+      <accordion header="Job Types">
+        <job-filters-side-bar-checkbox-group
+          :uniqueValues="uniqueJobTypes"
+          mutation="ADD_SELECTED_JOB_TYPES"
+        />
+      </accordion>
+
+      <accordion header="Organizations">
+        <job-filters-side-bar-checkbox-group
+          :uniqueValues="uniqueOrganizations"
+          mutation="ADD_SELECTED_ORGANIZATIONS"
+        />
+      </accordion>
     </section>
   </div>
 </template>
 
-<script>
+<script setup>
+import JobFiltersSidebarSkills from "@/components/job-results/job-filters-side-bar/JobFiltersSidebarSkills.vue";
+import Accordion from "@/components/shared/Accordion.vue";
 import ActionButton from "@/components/shared/ActionButton.vue";
-import JobFiltersSideBarCheckboxGroup from "@/components/job-results/job-filters-side-bar/JobFiltersSideBarCheckboxGroup.vue";
+import JobFiltersSideBarCheckboxGroup from "@/components/job-results/job-filters-side-bar/JobFiltersSidebarCheckboxGroup.vue";
+import { useStore } from "vuex";
+const store = useStore();
+import { useRoute } from "vue-router";
+const route = useRoute();
 
-import { useUniqueJobTypes, useUniqueOrganizations } from "@/store/composables";
+import {
+  useUniqueJobTypes,
+  useUniqueOrganizations,
+  useUniqueDegrees,
+} from "@/store/composables";
+import { onMounted } from "vue";
 
-export default {
-  name: "JobFiltersSidebar",
-  components: {
-    ActionButton,
-    JobFiltersSideBarCheckboxGroup,
-  },
-  setup() {
-    const uniqueJobTypes = useUniqueJobTypes();
-    const uniqueOrganizations = useUniqueOrganizations();
+const uniqueJobTypes = useUniqueJobTypes();
+const uniqueOrganizations = useUniqueOrganizations();
+const uniqueDegrees = useUniqueDegrees();
 
-    return { uniqueJobTypes, uniqueOrganizations };
-  },
+const clearUserJobFilterSelection = () => {
+  store.commit("CLEAR_USER_JOB_FILTER_SELECTIONS");
 };
+
+const parseSkillsSearchTerm = () => {
+  const role = route.query.role || "";
+  store.commit("UPDATE_SKILLS_SEARCH_TERM", role);
+};
+
+onMounted(() => {
+  parseSkillsSearchTerm();
+});
 </script>

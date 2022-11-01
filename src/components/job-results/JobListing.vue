@@ -5,7 +5,7 @@
       class="block mx-auto bg-white border border-solid border-brand-gray-2 rounded hover:shadow-gray"
     >
       <div class="pt-5 pb-2 mx-8 border-b border-solid border-brand-gray-2">
-        <h2 class="mb-2 text-2xl">{{ job.title }}</h2>
+        <h2 class="mb-2 text-2xl">{{ props.job.title }}</h2>
 
         <div class="flex flex-row align-middle">
           <div class="mr-5">
@@ -15,7 +15,7 @@
           <div>
             <ul>
               <li
-                v-for="location in job.locations"
+                v-for="location in props.job.locations"
                 :key="location"
                 class="inline-block mr-5"
               >
@@ -32,7 +32,7 @@
           <div>
             <ul class="pl-8 list-disc">
               <li
-                v-for="qualification in job.minimumQualifications"
+                v-for="qualification in props.job.minimumQualifications"
                 :key="qualification"
               >
                 {{ qualification }}
@@ -51,21 +51,15 @@
   </li>
 </template>
 
-<script>
-export default {
-  name: "JobListing",
-  props: {
-    job: {
-      type: Object,
-      required: true,
-    },
-  },
-  computed: {
-    jobPageLink() {
-      return `/jobs/results/${this.job.id}`;
-    },
-  },
-};
-</script>
+<script setup>
+import { computed, defineProps } from "vue";
 
-<style scoped></style>
+const props = defineProps({
+  job: {
+    type: Object,
+    required: true,
+  },
+});
+
+const jobPageLink = computed(() => `/jobs/results/${props.job.id}`);
+</script>

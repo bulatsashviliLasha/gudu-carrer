@@ -7,5 +7,3 @@ export default {
   name: "JobView",
 };
 </script>
-
-<style scoped></style>
